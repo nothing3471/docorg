@@ -1,0 +1,46 @@
+# --- Secrets -----------------------------------------------------------------
+# First, because everything below is recoverable and this is not.
+.env
+.env.*
+*.pem
+*.key
+id_rsa*
+credentials*
+creds*
+secrets*
+*_token*
+*apikey*
+*api_key*
+
+# --- Catalogue output --------------------------------------------------------
+# docorg writes sidecars and catalogues describing your own library: filenames,
+# titles, authors, extracted text. That is personal data even though the tool
+# never sends it anywhere.
+*.sidecar.json
+catalogue*.json
+catalogue*.csv
+docorg_out/
+*.docorg.json
+
+# --- Build -------------------------------------------------------------------
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Editors and OS ----------------------------------------------------------
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+desktop.ini
+.DS_Store

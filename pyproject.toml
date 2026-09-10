@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "docorg"
+version = "0.1.0"
+license = "AGPL-3.0-or-later"
+description = "Local-first document metadata extraction and cataloguing for large personal libraries."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Manuel Pacheco" }]
+
+# Deliberately minimal. Everything optional lives in an extra so that installing docorg
+# never silently pulls a copyleft library into a user's dependency tree.
+dependencies = [
+    "pypdfium2>=4",     # BSD-3-Clause / Apache-2.0 - default PDF backend
+    "Pillow>=10",       # MIT-CMU - required by pdfium's .to_pil(), even though
+                        #           nothing imports PIL by name
+    "requests>=2",      # Apache-2.0 - talks to the local model server
+]
+
+# Formats not yet implemented in this package live here rather than in core, so an
+# install never pulls a library the code does not actually import.
+[project.optional-dependencies-planned]
+docx = ["python-docx>=1"]   # MIT
+pdf-write = ["pypdf>=4"]    # BSD-3-Clause
+
+[project.optional-dependencies]
+# OCR is optional: it is large, and not every user needs it.
+ocr = ["paddleocr>=3", "paddlepaddle>=3"]
+tesseract = ["pytesseract>=0.3"]
+cbr = ["rarfile>=4"]    # ISC
+
+# Alternative backends. Both are AGPL-3.0, which is compatible with docorg's own AGPL
+# licence, so these are a free choice rather than a liability. They are optional because
+# the defaults are measurably equal or better (identical page counts and raster
+# dimensions across 69 real PDFs, no speed penalty) and keep the install smaller.
+alt-backends = ["PyMuPDF>=1.24", "EbookLib>=0.18"]
+
+dev = ["pytest>=8"]
+
+[project.urls]
+Homepage = "https://github.com/nothing3471/docorg"
+Source = "https://github.com/nothing3471/docorg"
+Issues = "https://github.com/nothing3471/docorg/issues"
+
+[project.scripts]
+docorg = "docorg.cli:main"
+
+[tool.pytest.ini_options]
+# importlib mode stops pytest walking up the filesystem to build a module name. Without
+# it, a stray __init__.py in a parent folder (e.g. a Calibre plugin dropped in Downloads)
+# turns that whole folder into a package and pytest imports every loose script in it.
+# That exact failure cost a debugging cycle on 2026-08-04.
+addopts = "-q --import-mode=importlib"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/docorg"]
